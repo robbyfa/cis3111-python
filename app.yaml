@@ -1,11 +1,18 @@
 runtime: python37
 
 env_variables:
-  CLOUD_SQL_CONNECTION_NAME: <YOUR_CONNECTION_NAME>
-  CLOUD_SQL_USER: <YOUR_USERNAME>
-  CLOUD_SQL_PASSWORD: <YOUR_PASSWORD>
-  DB_NAME: <YOUR_DATABASE_NAME>
+  CLOUD_SQL_CONNECTION_NAME: "CIS3111-ASSIGNMENT-2023:europe-west1:db-instance"
+  CLOUD_SQL_USER: "rob"
+  CLOUD_SQL_PASSWORD: "stfxv6gvwD+mxP+8JoKnfw2g"
+  DB_NAME: "random-numbers"
 
 handlers:
 - url: /.*
   script: auto
+  
+  automatic_scaling:
+  min_instances: 1
+  max_instances: 10
+  target_cpu_utilization: 0.6
+  max_concurrent_requests: 50
+
