@@ -1,55 +1,72 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from google.cloud import sqlconnector
+import os
+import random
 
 app = Flask(__name__)
 
-# Initialize the SQL connection pool
-db_user = "rob"
-db_pass = "YFDH7aB9i0f6gNhkDaztTqjQ"
-db_name = "random-numbers"
-db_socket_dir = "/cloudsql"
-cloud_sql_connection_name = "CIS3111-assignment:europe-west1:db-instance"
-db_pool = sqlconnector.connect(
-    user=db_user,
-    password=db_pass,
-    unix_socket=f"{db_socket_dir}/{cloud_sql_connection_name}/{db_name}"
+CLOUD_SQL_CONNECTION_NAME = os.environ.get("CLOUD_SQL_CONNECTION_NAME")
+CLOUD_SQL_USER = os.environ.get("DB_USER")
+CLOUD_SQL_PASSWORD = os.environ.get("CLOUD_SQL_PASSWORD")
+CLOUD_SQL_DATABASE = os.environ.get("DB_NAME")
+
+db = sqlconnector.connect(
+    unix_socket = f"/cloudsql/{CLOUD_SQL_CONNECTION_NAME}",
+    user = CLOUD_SQL_USER,
+    password = CLOUD_SQL_PASSWORD,
+    database = CLOUD_SQL_DATABASE
 )
 
-# API endpoint for generating and storing random numbers
-@app.route("/generate", methods=["POST"])
-def generate_random_numbers():
-    # Get the number of random numbers to generate from the request
-    num_numbers = request.json.get("num_numbers", 1000)
-    
-    # Generate the random numbers
-    random_numbers = [random.randint(0, 100000) for i in range(num_numbers)]
-    
-    # Store the random numbers in the database
-    with db_pool.cursor() as cursor:
-        insert_query = "INSERT INTO random_numbers (number) VALUES (%s)"
-        values = [(num,) for num in random_numbers]
-        cursor.executemany(insert_query, values)
-        db_pool.commit()
-    
-    # Return a success message
-    return jsonify({"message": f"Generated and stored {num_numbers} random numbers"})
+def create_table():
+    cursor = db.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS random_numbers (
+            id SERIAL NOT NULL PRIMARY KEY,
+            instance_name VARCHAR(255) NOT NULL,
+            number INTEGER NOT NULL
+        )
+    """)
+    db.commit()
 
+def insert_number(instance_name, number):
+    cursor = db.cursor()
+    cursor.execute("""
+        INSERT INTO random_numbers (instance_name, number)
+        VALUES (%s, %s)
+    """, (instance_name, number))
+    db.commit()
 
-# API endpoint for retrieving the largest and smallest random numbers
-@app.route("/results", methods=["GET"])
-def get_random_number_results():
-    # Retrieve the largest and smallest random numbers from the database
-    with db_pool.cursor() as cursor:
-        select_query = "SELECT MAX(number), MIN(number) FROM random_numbers"
-        cursor.execute(select_query)
-        results = cursor.fetchone()
-    
-    # Format the results as a JSON object and return it
-    return jsonify({
-        "largest": results[0],
-        "smallest": results[1]
-    })
+def get_numbers():
+    cursor = db.cursor()
+    cursor.execute("""
+        SELECT instance_name, number FROM random_numbers
+    """)
+    results = cursor.fetchall()
+    return results
 
+@app.route('/generate')
+def generate_numbers():
+    instance_name = os.environ.get("GAE_INSTANCE")
+    for i in range(1000):
+        number = random.randint(0, 100000)
+        insert_number(instance_name, number)
+    return "Numbers generated and stored in the database."
 
-if __name__ == "__main__":
-    app.run()
+@app.route('/get_results')
+def get_results():
+    numbers = get_numbers()
+    results = {
+        "total_numbers": len(numbers),
+        "numbers_by_instance": {}
+    }
+    for instance_name, number in numbers:
+        if instance_name not in results["numbers_by_instance"]:
+            results["numbers_by_instance"][instance_name] = 0
+        results["numbers_by_instance"][instance_name] += 1
+    results["largest_number"] = max(numbers, key=lambda x: x[1])
+    results["smallest_number"] = min(numbers, key=lambda x: x[1])
+    return jsonify(results)
+
+if __name__ == '__main__':
+    create_table()
+    app.run(host='127.0.0.1', port=8080, debug=True)
