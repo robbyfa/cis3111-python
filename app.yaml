@@ -6,6 +6,7 @@ env_variables:
   DB_NAME: "random-numbers"
   DB_USER: "rob"
   PROJECT_NAME: "CIS3111-assignment"
+  PROJECT_ID: "cis3111-assignment2023"
   REGION: "europe-west1"
 
 automatic_scaling:
