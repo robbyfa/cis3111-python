@@ -1,12 +1,13 @@
-runtime: python37
+runtime: python39
 
 env_variables:
-  CLOUD_SQL_CONNECTION_NAME: "CIS3111-ASSIGNMENT-2023:europe-west1:db-instance"
-  CLOUD_SQL_USER: "rob"
-  CLOUD_SQL_PASSWORD: "stfxv6gvwD+mxP+8JoKnfw2g"
+  CLOUD_SQL_PASSWORD: "YFDH7aB9i0f6gNhkDaztTqjQ"
+  DB_INSTANCE_NAME: "db-instance"
   DB_NAME: "random-numbers"
+  DB_USER: "rob"
+  PROJECT_NAME: "CIS3111-assignment"
+  REGION: "europe-west1"
 
-handlers:
-- url: /.*
-  script: auto
-
+automatic_scaling:
+  min_instances: 5
+  max_instances: 15
