@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Random Number Generator</title>
+</head>
+<body>
+    <h1>Random Number Generator Results</h1>
+
+    <table>
+        <tr>
+            <th>Instance Name</th>
+            <th>Total Numbers Generated</th>
+        </tr>
+        {% for row in results.table %}
+            <tr>
+                <td>{{ row.name }}</td>
+                <td>{{ row.total }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
