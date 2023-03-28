@@ -46,5 +46,10 @@ def results():
 
     return jsonify(results)
 
+    @app.route('/test')
+def test():
+    return 'Hello, World!'
+
+
 if __name__ == '__main__':
     app.run(debug=True)
