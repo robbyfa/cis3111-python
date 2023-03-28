@@ -3,7 +3,7 @@ import requests
 
 app = Flask(__name__)
 
-API_URL = 'https://random-numbers-assignment.appspot.com/api/'
+API_URL = 'https://api-dot-random-numbers-assignment.ew.r.appspot.com'
 
 @app.route('/')
 def index():
