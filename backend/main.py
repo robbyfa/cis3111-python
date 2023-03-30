@@ -5,10 +5,11 @@ import random
 
 app = Flask(__name__)
 
+
 # Define database configuration
 db_config = {
     "user": "rob",
-    "password": os.environ["CLOUD_SQL_PASSWORD"],
+    "password": "QmAQ+HI483Y61tSAQPgzE8vc",
     "host": "random-numbers-assignment:europe-west1",
     "database": "numbers",
     "unix_socket": f"/cloudsql/{os.environ['PROJECT_NAME']}:europe-west1:db-instance",
