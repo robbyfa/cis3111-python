@@ -7,10 +7,11 @@ app = Flask(__name__)
 
 # Define database configuration
 db_config = {
-    'user': os.environ['DB_USER'],
-    'password': os.environ['CLOUD_SQL_PASSWORD'],
-    'host': f'/cloudsql/{os.environ["PROJECT_NAME"]}:{os.environ["REGION"]}:{os.environ["DB_INSTANCE_NAME"]}',
-    'database': os.environ['DB_NAME']
+    "user": "rob",
+    "password": os.environ["CLOUD_SQL_PASSWORD"],
+    "host": "random-numbers-assignment:europe-west1",
+    "database": "numbers",
+    "unix_socket": f"/cloudsql/{os.environ['PROJECT_NAME']}:europe-west1:db-instance",
 }
 
 # Define API endpoints
