@@ -14,14 +14,15 @@ DB_USER = "rob"
 REGION = "europe-west1"
 
 def connect_to_cloudsql():
-    connection_string = {
-        "user": DB_USER,
-        "password": CLOUD_SQL_PASSWORD,
-        "host": f"{PROJECT_ID}:{REGION}:{DB_INSTANCE_NAME}",
-        "database": DB_NAME,
-    }
-    connection = connector.connect(connection_string, "cloudsql")
+    unix_socket = os.path.join("/cloudsql", f"{PROJECT_ID}:{REGION}:{DB_INSTANCE_NAME}")
+    connection = mysql.connector.connect(
+        user=DB_USER,
+        password=CLOUD_SQL_PASSWORD,
+        unix_socket=unix_socket,
+        database=DB_NAME,
+    )
     return connection
+
 
 @app.route("/generate_numbers")
 def generate_numbers():

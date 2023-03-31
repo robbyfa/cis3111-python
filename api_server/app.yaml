@@ -1,9 +1,6 @@
 runtime: python311
-env: flex
+instance_class: F1
 service: api
 automatic_scaling:
-  min_num_instances: 5
-  max_num_instances: 15
-  cool_down_period_sec: 60
-  cpu_utilization:
-    target_utilization: 0.5
+  min_instances: 5
+  max_instances: 15
