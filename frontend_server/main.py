@@ -1,9 +1,15 @@
-import requests
+try:
+    import requests
+except ImportError:
+    import sys
+    print("Error: The 'requests' package is required but not installed. Please add 'requests' to your requirements.txt file.", file=sys.stderr)
+    sys.exit(1)
+
 from flask import Flask, jsonify
 
 app = Flask(__name__)
 
-API_URL = "https://api-dot-numbers-generator-assignment.appspot.com"
+API_URL = "https://api-dot-numbers-generator-assignment.ew.r.appspot.com"
 
 @app.route("/")
 def index():
