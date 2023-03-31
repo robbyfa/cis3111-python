@@ -1,0 +1,6 @@
+runtime: python311
+env: flex
+service: api
+automatic_scaling:
+  min_instances: 5
+  max_instances: 15
