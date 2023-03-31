@@ -1,5 +1,8 @@
 runtime: python39
-instance_class: F1
+entrypoint: gunicorn -b :$PORT main:app
+instance_class: F2
 automatic_scaling:
-  min_instances: 1
-  max_instances: 5
+  min_instances: 5
+  max_instances: 15
+env_variables:
+  GAE_EXTRA_REQUIREMENTS: "requirements.txt"
