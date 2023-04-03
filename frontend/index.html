@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Number Generator</title>
+  <script>
+    async function generateNumbers() {
+      const response = await fetch('/api/generate_numbers');
+      const data = await response.json();
+      console.log(data);
+    }
+
+    async function getResults() {
+      const response = await fetch('/api/get_results');
+      const data = await response.json();
+      console.log(data);
+    }
+  </script>
+</head>
+<body>
+  <h1>Random Number Generator</h1>
+  <button onclick="generateNumbers()">Generate Numbers</button>
+  <button onclick="getResults()">Get Results</button>
+</body>
+</html>
