@@ -3,7 +3,7 @@ env: flex
 entrypoint: python -m http.server 8080
 
 runtime_config:
-  python_version: 3.8
+  python_version: 3.7
 
 handlers:
 - url: /.*
