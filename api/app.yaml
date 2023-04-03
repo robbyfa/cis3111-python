@@ -11,7 +11,7 @@ automatic_scaling:
   cool_down_period_sec: 120
 
 env_variables:
-  REDIS_HOST: "10.252.125.115"
+  REDIS_HOST: "10.98.253.195"
   REDIS_PORT: "6379"
 
 service: api
