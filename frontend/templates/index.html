@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Random Number Generator</title>
+</head>
+<body>
+    <h1>Random Number Generator</h1>
+    <button onclick="generateNumbers()">Generate Numbers</button>
+    <button onclick="viewNumbers()">View Numbers</button>
+    <pre id="results"></pre>
+   
+    <script>
+        async function generateNumbers() {
+            const response = await fetch('https://cis3111-2023-class.ew.r.appspot.com/api/generate/all');
+            const data = await response.json();
+            document.getElementById('results').textContent = 'Random numbers generated successfully.';
+        }
+
+        async function viewNumbers() {
+            const response = await fetch('https://cis3111-2023-class.ew.r.appspot.com/api/results');
+            const data = await response.json();
+            document.getElementById('results').textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>
