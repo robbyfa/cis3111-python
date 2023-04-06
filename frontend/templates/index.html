@@ -7,7 +7,10 @@
     <h1>Random Number Generator</h1>
     <button onclick="generateNumbers()">Generate Numbers</button>
     <button onclick="viewNumbers()">View Numbers</button>
+    <button onclick="viewInstances()">View Istances</button>
+
     <pre id="results"></pre>
+    <pre id="instances"></pre>
     <script>
        
 
@@ -38,6 +41,12 @@
             const response = await fetch(' https://api-dot-cis3111-2023-class.ew.r.appspot.com/results');
             const data = await response.json();
             document.getElementById('results').textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function viewInstances() {
+            const response = await fetch(' https://api-dot-cis3111-2023-class.ew.r.appspot.com/instances');
+            const data = await response.json();
+            document.getElementById('instances').textContent = JSON.stringify(data, null, 2);
         }
     </script>
 </body>

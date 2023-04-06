@@ -66,5 +66,15 @@ def get_results():
         "max_number": {"instance_name": max_number.instance_name, "number": max_number.number}
     }), 200
 
+
+@app.route("/instances", methods=["GET"])
+def get_instances():
+    session = Session()
+    query = session.query(NumberEntry.instance_name, func.count(NumberEntry.instance_name)).group_by(NumberEntry.instance_name).all()
+
+    instance_counts = [{"instance_name": row[0], "count": row[1]} for row in query]
+
+    return jsonify(instance_counts), 200
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)), debug=True)
