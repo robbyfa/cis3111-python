@@ -2,3 +2,4 @@ Flask
 pymysql
 cloud-sql-python-connector
 Flask-Cors
+SQLAlchemy
