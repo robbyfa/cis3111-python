@@ -42,15 +42,16 @@ def generate():
     instance_name = request.form.get("instance_name")
 
     numbers_generated = []
-    for _ in range(1000):
-        random_number = random.randint(0, 100000)
-        new_entry = NumberEntry(instance_name=instance_name, number=random_number)
+    for i in range(10):
+        for j in range(1000):
+            random_number = random.randint(0, 100000)
+            new_entry = NumberEntry(instance_name=instance_name, number=random_number)
 
-        session = Session()
-        session.add(new_entry)
-        session.commit()
+            session = Session()
+            session.add(new_entry)
+            session.commit()
 
-        numbers_generated.append({"instance_name": instance_name, "number": random_number})
+            numbers_generated.append({"instance_name": instance_name, "number": random_number})
 
     return jsonify(numbers_generated), 201
 
