@@ -1,11 +1,13 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from google.cloud.sql.connector import Connector
 import pymysql
 import random
+from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 import os
 
 app = Flask(__name__)
-
+CORS(app)
 def create_conn():
     conn = pymysql.connect(
         user=os.environ["DB_USER"],
