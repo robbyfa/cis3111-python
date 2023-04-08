@@ -8,33 +8,38 @@
     <button onclick="generateNumbers()">Generate Numbers</button>
     <button onclick="viewNumbers()">View Numbers</button>
     <button onclick="viewStatistics()">View Instances</button>
+    <button onclick="clearData()">Clear Data</button>
+
 
     <pre id="results"></pre>
     <pre id="statistics"></pre>
     <script>
        
 
-        async function generateNumbers() {
+       async function generateNumbers() {
+  for (let i = 1; i <= 10; i++) {
     fetch("https://api-dot-cis3111-2023-class.ew.r.appspot.com/generate", {
-        method: "POST",
-        headers: {
+      method: "POST",
+      headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({ instance_name: "Instance 1" }),
+      },
+      body: new URLSearchParams({ instance_name: `Instance ${i}` }),
     })
-        .then((response) => {
+      .then((response) => {
         if (!response.ok) {
-            throw new Error("Network response was not ok");
+          throw new Error("Network response was not ok");
         }
         return response.json();
-        })
-        .then((data) => {
-        console.log("Success:", data);
-        })
-        .catch((error) => {
+      })
+      .then((data) => {
+        console.log(`Success for Instance ${i}:`, data);
+      })
+      .catch((error) => {
         console.error("Error:", error);
-        });
-    }
+      });
+  }
+}
+
 
 
         async function viewNumbers() {
@@ -71,6 +76,25 @@
     `;
 
     document.getElementById('statistics').appendChild(table);
+}
+
+
+        async function clearData() {
+  fetch("https://api-dot-cis3111-2023-class.ew.r.appspot.com/clear", {
+    method: "POST",
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log("Success:", data);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 }
 
 

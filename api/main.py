@@ -86,5 +86,13 @@ def get_statistics():
 
     return jsonify(statistics), 200, {'Access-Control-Allow-Origin': '*'}
 
+@app.route("/clear", methods=["POST"])
+def clear_data():
+    session = Session()
+    session.query(NumberEntry).delete()
+    session.commit()
+    return jsonify({"message": "All data cleared"}), 200
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)), debug=True)
