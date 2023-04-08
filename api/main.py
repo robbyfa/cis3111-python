@@ -31,6 +31,13 @@ class NumberEntry(Base):
     instance_name = Column(String(255))
     number = Column(Integer)
 
+class InstanceCount(Base):
+    __tablename__ = "instance_count"
+
+    instance_name = Column(String(255), primary_key=True)
+    generated_count = Column(Integer)
+
+
 # Create the table if it doesn't exist
 Base.metadata.create_all(engine)
 
@@ -39,21 +46,39 @@ Session = sessionmaker(bind=engine)
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    # Get instance ID from environment variables
-    instance_id = os.environ.get("GAE_INSTANCE", "unknown-instance")
+    instance_name = request.form.get("instance_name")
 
-    numbers_generated = []
-    for i in range(1000):
-        random_number = random.randint(0, 100000)
-        new_entry = NumberEntry(instance_name=instance_id, number=random_number)
-
-        session = Session()
-        session.add(new_entry)
+    session = Session()
+    
+    # Check if the current instance has an entry in the instance_count table
+    instance_entry = session.query(InstanceCount).filter_by(instance_name=instance_name).one_or_none()
+    
+    if instance_entry is None:
+        # If no entry exists, create a new one with count 0
+        instance_entry = InstanceCount(instance_name=instance_name, generated_count=0)
+        session.add(instance_entry)
         session.commit()
 
-        numbers_generated.append({"instance_name": instance_id, "number": random_number})
+    # Check if the current instance has generated 1000 numbers
+    if instance_entry.generated_count >= 1000:
+        # Use a new instance for the next batch of numbers
+        instance_name = f"Instance {int(instance_name.split(' ')[1]) + 1}"
+
+    numbers_generated = []
+    for _ in range(1000):
+        random_number = random.randint(0, 100000)
+        new_entry = NumberEntry(instance_name=instance_name, number=random_number)
+
+        session.add(new_entry)
+        
+        numbers_generated.append({"instance_name": instance_name, "number": random_number})
+
+    # Increment the generated_count for the current instance
+    instance_entry.generated_count += 1000
+    session.commit()
 
     return jsonify(numbers_generated), 201
+
 
 @app.route("/results", methods=["GET"])
 def get_results():
