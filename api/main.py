@@ -4,7 +4,7 @@ import pymysql
 import random
 import os
 from flask_cors import CORS
-from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy import create_engine, Column, Integer, String, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -42,16 +42,15 @@ def generate():
     instance_name = request.form.get("instance_name")
 
     numbers_generated = []
-    for i in range(10):
-        for j in range(1000):
-            random_number = random.randint(0, 100000)
-            new_entry = NumberEntry(instance_name=instance_name, number=random_number)
+    for i in range(1000):
+        random_number = random.randint(0, 100000)
+        new_entry = NumberEntry(instance_name=instance_name, number=random_number)
 
-            session = Session()
-            session.add(new_entry)
-            session.commit()
+        session = Session()
+        session.add(new_entry)
+        session.commit()
 
-            numbers_generated.append({"instance_name": instance_name, "number": random_number})
+        numbers_generated.append({"instance_name": instance_name, "number": random_number})
 
     return jsonify(numbers_generated), 201
 
@@ -65,7 +64,6 @@ def get_results():
         "min_number": {"instance_name": min_number.instance_name, "number": min_number.number},
         "max_number": {"instance_name": max_number.instance_name, "number": max_number.number}
     }), 200
-
 
 @app.route("/statistics", methods=["GET"])
 def get_statistics():
@@ -87,7 +85,6 @@ def get_statistics():
     ]
 
     return jsonify(statistics), 200, {'Access-Control-Allow-Origin': '*'}
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)), debug=True)
