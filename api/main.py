@@ -39,18 +39,19 @@ Session = sessionmaker(bind=engine)
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    instance_name = request.form.get("instance_name")
+    # Get instance ID from environment variables
+    instance_id = os.environ.get("GAE_INSTANCE", "unknown-instance")
 
     numbers_generated = []
     for i in range(1000):
         random_number = random.randint(0, 100000)
-        new_entry = NumberEntry(instance_name=instance_name, number=random_number)
+        new_entry = NumberEntry(instance_name=instance_id, number=random_number)
 
         session = Session()
         session.add(new_entry)
         session.commit()
 
-        numbers_generated.append({"instance_name": instance_name, "number": random_number})
+        numbers_generated.append({"instance_name": instance_id, "number": random_number})
 
     return jsonify(numbers_generated), 201
 

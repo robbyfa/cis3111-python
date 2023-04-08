@@ -17,13 +17,13 @@
        
 
        async function generateNumbers() {
-  for (let i = 1; i <= 10; i++) {
+  for (let i = 0; i < 10; i++) {
     fetch("https://api-dot-cis3111-2023-class.ew.r.appspot.com/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: new URLSearchParams({ instance_name: `Instance ${i}` }),
+      body: new URLSearchParams({}),
     })
       .then((response) => {
         if (!response.ok) {
@@ -32,14 +32,13 @@
         return response.json();
       })
       .then((data) => {
-        console.log(`Success for Instance ${i}:`, data);
+        console.log("Success:", data);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   }
 }
-
 
 
         async function viewNumbers() {
