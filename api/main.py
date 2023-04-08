@@ -67,14 +67,27 @@ def get_results():
     }), 200
 
 
-@app.route("/instances", methods=["GET"])
-def get_instances():
+@app.route("/statistics", methods=["GET"])
+def get_statistics():
     session = Session()
-    query = session.query(NumberEntry.instance_name, func.count(NumberEntry.instance_name)).group_by(NumberEntry.instance_name).all()
+    query = session.query(
+        NumberEntry.instance_name,
+        func.count(NumberEntry.number).label("total_numbers"),
+        func.max(NumberEntry.number).label("max_number"),
+        func.min(NumberEntry.number).label("min_number")
+    ).group_by(NumberEntry.instance_name).all()
 
-    instance_counts = [{"instance_name": row[0], "count": row[1]} for row in query]
+    statistics = [
+        {
+            "instance_name": row[0],
+            "total_numbers": row[1],
+            "max_number": row[2],
+            "min_number": row[3]
+        } for row in query
+    ]
 
-    return jsonify(instance_counts), 200
+    return jsonify(statistics), 200
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)), debug=True)

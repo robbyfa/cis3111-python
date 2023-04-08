@@ -7,7 +7,7 @@
     <h1>Random Number Generator</h1>
     <button onclick="generateNumbers()">Generate Numbers</button>
     <button onclick="viewNumbers()">View Numbers</button>
-    <button onclick="viewInstances()">View Instances</button>
+    <button onclick="viewStatistics()">View Instances</button>
 
     <pre id="results"></pre>
     <pre id="instances"></pre>
@@ -43,39 +43,36 @@
             document.getElementById('results').textContent = JSON.stringify(data, null, 2);
         }
 
-        async function viewInstances() {
-  try {
-    const response = await fetch("https://api-dot-cis3111-2023-class.ew.r.appspot.com/instances");
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
+     
+        async function viewStatistics() {
+    const response = await fetch('https://api-dot-cis3111-2023-class.ew.r.appspot.com/statistics');
     const data = await response.json();
-    const preElement = document.getElementById("instances");
-    preElement.textContent = "";
-    const table = document.createElement("table");
-    const headerRow = document.createElement("tr");
-    const instanceHeader = document.createElement("th");
-    const numberHeader = document.createElement("th");
-    instanceHeader.textContent = "Instance Name";
-    numberHeader.textContent = "Number of Generated Numbers";
-    headerRow.appendChild(instanceHeader);
-    headerRow.appendChild(numberHeader);
-    table.appendChild(headerRow);
-    for (const instance of data.instances) {
-      const row = document.createElement("tr");
-      const instanceNameCell = document.createElement("td");
-      const numberOfNumbersCell = document.createElement("td");
-      instanceNameCell.textContent = instance.instance_name;
-      numberOfNumbersCell.textContent = instance.number_count;
-      row.appendChild(instanceNameCell);
-      row.appendChild(numberOfNumbersCell);
-      table.appendChild(row);
-    }
-    preElement.appendChild(table);
-  } catch (error) {
-    console.error("Error:", error);
-  }
+
+    const table = document.createElement('table');
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Instance Name</th>
+                <th>Total Numbers Generated</th>
+                <th>Largest Number Generated</th>
+                <th>Smallest Number Generated</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${data.map(instance => `
+                <tr>
+                    <td>${instance.instance_name}</td>
+                    <td>${instance.total_numbers}</td>
+                    <td>${instance.max_number}</td>
+                    <td>${instance.min_number}</td>
+                </tr>
+            `).join('')}
+        </tbody>
+    `;
+
+    document.getElementById('statistics').appendChild(table);
 }
+
 
     </script>
 </body>
