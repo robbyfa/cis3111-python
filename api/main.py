@@ -86,7 +86,7 @@ def get_statistics():
         } for row in query
     ]
 
-    return jsonify(statistics), 200
+    return jsonify(statistics), 200, {'Access-Control-Allow-Origin': '*'}
 
 
 if __name__ == "__main__":
