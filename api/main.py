@@ -30,18 +30,14 @@ class NumberEntry(Base):
     instance_name = Column(String(255))
     number = Column(Integer)
 
-class InstanceCount(Base):
-    __tablename__ = "instance_count"
+class InstanceCounter(Base):
+    __tablename__ = "instance_counters"
 
-    instance_name = Column(String(255), primary_key=True)
-    generated_count = Column(Integer)
+    id = Column(Integer, primary_key=True)
+    instance_name = Column(String(255))
+    count = Column(Integer)
 
-
-# Create the table if it doesn't exist
 Base.metadata.create_all(engine)
-
-# Create a session factory
-Session = sessionmaker(bind=engine)
 
 @app.route("/generate", methods=["POST"])
 def generate():
@@ -55,10 +51,17 @@ def generate():
     else:
         instance_number = 0
 
-    # Check if the instance has already generated 1000 numbers
+    # Retrieve or create a counter for the instance
     session = Session()
-    instance_entry_count = session.query(NumberEntry).filter(NumberEntry.instance_name == f"Instance {instance_number}").count()
-    if instance_entry_count >= 1000:
+    instance_counter = session.query(InstanceCounter).filter(InstanceCounter.instance_name == f"Instance {instance_number}").one_or_none()
+    
+    if not instance_counter:
+        instance_counter = InstanceCounter(instance_name=f"Instance {instance_number}", count=0)
+        session.add(instance_counter)
+        session.commit()
+
+    # Check if the instance has already generated 1000 numbers
+    if instance_counter.count >= 1000:
         return jsonify({"error": "This instance has already generated 1000 numbers."}), 400
 
     numbers_generated = []
@@ -70,9 +73,15 @@ def generate():
         session.add(new_entry)
         session.commit()
 
+        # Update the counter
+        instance_counter.count += 1
+        session.add(instance_counter)
+        session.commit()
+
         numbers_generated.append({"instance_name": f"Instance {instance_number}", "number": random_number})
 
     return jsonify(numbers_generated), 201
+
 
 @app.route("/results", methods=["GET"])
 def get_results():

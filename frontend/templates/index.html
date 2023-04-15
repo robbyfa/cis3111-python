@@ -79,6 +79,10 @@
 
 
         async function clearData() {
+
+          document.getElementById('results').textContent = '';
+          document.getElementById('statistics').textContent = '';
+
   fetch("https://api-dot-cis3111-2023-class.ew.r.appspot.com/clear", {
     method: "POST",
   })
