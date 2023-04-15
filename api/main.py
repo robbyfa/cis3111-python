@@ -9,7 +9,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__)
-CORS(app, resources={r"*": {"origins": "https://cis3111-2023-class.ew.r.appspot.com"}})
+CORS(app)
 # Create database engine
 db_user = "rob"
 db_pass = "uWzKUp8YtnLuRqJP/dbeZLdV"
@@ -44,7 +44,6 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
 @app.route("/generate", methods=["POST"])
-@cross_origin(origin="https://cis3111-2023-class.ew.r.appspot.com")
 def generate():
     # Get instance ID from environment variables
     instance_id = os.environ.get("GAE_INSTANCE", "unknown-instance")
@@ -63,7 +62,6 @@ def generate():
     return jsonify(numbers_generated), 201
 
 @app.route("/results", methods=["GET"])
-@cross_origin(origin="https://cis3111-2023-class.ew.r.appspot.com")
 def get_results():
     session = Session()
     min_number = session.query(NumberEntry).order_by(NumberEntry.number).first()
@@ -75,7 +73,6 @@ def get_results():
     }), 200
 
 @app.route("/statistics", methods=["GET"])
-@cross_origin(origin="https://cis3111-2023-class.ew.r.appspot.com")
 def get_statistics():
     session = Session()
     query = session.query(
@@ -97,7 +94,6 @@ def get_statistics():
     return jsonify(statistics), 200, {'Access-Control-Allow-Origin': '*'}
 
 @app.route("/clear", methods=["POST"])
-@cross_origin(origin="https://cis3111-2023-class.ew.r.appspot.com")
 def clear_data():
     session = Session()
     session.query(NumberEntry).delete()
