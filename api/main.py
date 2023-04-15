@@ -48,16 +48,29 @@ def generate():
     # Get instance ID from environment variables
     instance_id = os.environ.get("GAE_INSTANCE", "unknown-instance")
 
+    # Extract instance number from instance_id using a regular expression
+    instance_number_match = re.search(r'\d+', instance_id)
+    if instance_number_match:
+        instance_number = int(instance_number_match.group())
+    else:
+        instance_number = 0
+
+    # Check if the instance has already generated 1000 numbers
+    session = Session()
+    instance_entry_count = session.query(NumberEntry).filter(NumberEntry.instance_name == f"Instance {instance_number}").count()
+    if instance_entry_count >= 1000:
+        return jsonify({"error": "This instance has already generated 1000 numbers."}), 400
+
     numbers_generated = []
     for i in range(1000):
         random_number = random.randint(0, 100000)
-        new_entry = NumberEntry(instance_name=instance_id, number=random_number)
+        new_entry = NumberEntry(instance_name=f"Instance {instance_number}", number=random_number)
 
         session = Session()
         session.add(new_entry)
         session.commit()
 
-        numbers_generated.append({"instance_name": instance_id, "number": random_number})
+        numbers_generated.append({"instance_name": f"Instance {instance_number}", "number": random_number})
 
     return jsonify(numbers_generated), 201
 
