@@ -90,7 +90,7 @@ def generate():
 
         numbers_generated.append({"instance_name": f"Instance {instance_number}", "number": random_number})
 
-    return jsonify(numbers_generated), 201
+    return jsonify(numbers_generated), 201, {'Access-Control-Allow-Origin': '*'}
 @app.route("/results", methods=["GET"])
 def get_results():
     session = Session()
