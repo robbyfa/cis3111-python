@@ -10,6 +10,7 @@ from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__)
 CORS(app)
+
 # Create database engine
 db_user = "rob"
 db_pass = "uWzKUp8YtnLuRqJP/dbeZLdV"
@@ -30,12 +31,21 @@ class NumberEntry(Base):
     instance_name = Column(String(255))
     number = Column(Integer)
 
+
+
 class InstanceCounter(Base):
     __tablename__ = "instance_counters"
 
     id = Column(Integer, primary_key=True)
     instance_name = Column(String(255))
     count = Column(Integer)
+
+# Create the table if it doesn't exist
+Base.metadata.create_all(engine)
+
+# Create a session factory
+Session = sessionmaker(bind=engine)
+
 
 Base.metadata.create_all(engine)
 
@@ -81,8 +91,6 @@ def generate():
         numbers_generated.append({"instance_name": f"Instance {instance_number}", "number": random_number})
 
     return jsonify(numbers_generated), 201
-
-
 @app.route("/results", methods=["GET"])
 def get_results():
     session = Session()
