@@ -9,8 +9,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__)
-CORS(app)
-
+CORS(app, resources={r"*": {"origins": "https://cis3111-2023-class.ew.r.appspot.com"}})
 # Create database engine
 db_user = "rob"
 db_pass = "uWzKUp8YtnLuRqJP/dbeZLdV"
@@ -45,42 +44,26 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
 @app.route("/generate", methods=["POST"])
+@cross_origin(origin="https://cis3111-2023-class.ew.r.appspot.com")
 def generate():
-    instance_name = request.form.get("instance_name")
-
-    session = Session()
-    
-    # Check if the current instance has an entry in the instance_count table
-    instance_entry = session.query(InstanceCount).filter_by(instance_name=instance_name).one_or_none()
-    
-    if instance_entry is None:
-        # If no entry exists, create a new one with count 0
-        instance_entry = InstanceCount(instance_name=instance_name, generated_count=0)
-        session.add(instance_entry)
-        session.commit()
-
-    # Check if the current instance has generated 1000 numbers
-    if instance_entry.generated_count >= 1000:
-        # Use a new instance for the next batch of numbers
-        instance_name = f"Instance {int(instance_name.split(' ')[1]) + 1}"
+    # Get instance ID from environment variables
+    instance_id = os.environ.get("GAE_INSTANCE", "unknown-instance")
 
     numbers_generated = []
-    for _ in range(1000):
+    for i in range(1000):
         random_number = random.randint(0, 100000)
-        new_entry = NumberEntry(instance_name=instance_name, number=random_number)
+        new_entry = NumberEntry(instance_name=instance_id, number=random_number)
 
+        session = Session()
         session.add(new_entry)
-        
-        numbers_generated.append({"instance_name": instance_name, "number": random_number})
+        session.commit()
 
-    # Increment the generated_count for the current instance
-    instance_entry.generated_count += 1000
-    session.commit()
+        numbers_generated.append({"instance_name": instance_id, "number": random_number})
 
     return jsonify(numbers_generated), 201
 
-
 @app.route("/results", methods=["GET"])
+@cross_origin(origin="https://cis3111-2023-class.ew.r.appspot.com")
 def get_results():
     session = Session()
     min_number = session.query(NumberEntry).order_by(NumberEntry.number).first()
@@ -92,6 +75,7 @@ def get_results():
     }), 200
 
 @app.route("/statistics", methods=["GET"])
+@cross_origin(origin="https://cis3111-2023-class.ew.r.appspot.com")
 def get_statistics():
     session = Session()
     query = session.query(
@@ -113,6 +97,7 @@ def get_statistics():
     return jsonify(statistics), 200, {'Access-Control-Allow-Origin': '*'}
 
 @app.route("/clear", methods=["POST"])
+@cross_origin(origin="https://cis3111-2023-class.ew.r.appspot.com")
 def clear_data():
     session = Session()
     session.query(NumberEntry).delete()
