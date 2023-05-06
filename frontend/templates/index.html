@@ -17,26 +17,28 @@
        
 
        async function generateNumbers() {
-  for (let i = 0; i < 1000; i++) {
-    fetch("https://api-dot-cis3111-2023-class.ew.r.appspot.com/generate", {
+  const generatePromises = [];
+  for (let i = 0; i < 10; i++) {
+    generatePromises.push(fetch("https://api-dot-cis3111-2023-class.ew.r.appspot.com/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams({}),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Success:", data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    }));
+  }
+
+  try {
+    const responses = await Promise.all(generatePromises);
+    const data = await Promise.all(responses.map(response => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    }));
+    console.log("Success:", data);
+  } catch (error) {
+    console.error("Error:", error);
   }
 }
 

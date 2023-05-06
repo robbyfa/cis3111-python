@@ -76,7 +76,7 @@ def generate():
         return jsonify({"error": "This instance has already generated 1000 numbers."}), 400
 
     numbers_generated = []
-    for i in range(1):
+    for i in range(1000):
         random_number = random.randint(0, 100000)
         new_entry = NumberEntry(instance_name=f"Instance {instance_number}", number=random_number)
 
