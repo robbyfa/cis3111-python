@@ -10,7 +10,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"*": {"origins": "https://cis3111-2023-class.ew.r.appspot.com"}})
 
 # Create database engine
 db_user = "rob"
