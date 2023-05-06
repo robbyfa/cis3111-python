@@ -17,7 +17,7 @@
        
 
        async function generateNumbers() {
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 1000; i++) {
     fetch("https://api-dot-cis3111-2023-class.ew.r.appspot.com/generate", {
       method: "POST",
       headers: {
@@ -39,6 +39,7 @@
       });
   }
 }
+
 
 
         async function viewNumbers() {
