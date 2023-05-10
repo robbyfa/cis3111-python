@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from google.cloud.sql.connector import Connector
 import pymysql
 import random
@@ -10,7 +10,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__)
-CORS(app, resources={r"*": {"origins": "*"}})  
+CORS(app, resources={r"*": {"origins": ["https://cis3111-2023-class.ew.r.appspot.com"]}})
 
 # Create database engine
 db_user = "rob"
@@ -91,17 +91,22 @@ def generate():
 
         numbers_generated.append({"instance_name": f"Instance {instance_number}", "number": random_number})
 
-    return jsonify(numbers_generated), 201, {'Access-Control-Allow-Origin': '*'}
+    response = make_response(jsonify(numbers_generated), 201)
+    response.headers['Access-Control-Allow-Origin'] = 'https://cis3111-2023-class.ew.r.appspot.com'
+    return response
+
 @app.route("/results", methods=["GET"])
 def get_results():
     session = Session()
     min_number = session.query(NumberEntry).order_by(NumberEntry.number).first()
     max_number = session.query(NumberEntry).order_by(NumberEntry.number.desc()).first()
 
-    return jsonify({
+    response = make_response(jsonify({
         "min_number": {"instance_name": min_number.instance_name, "number": min_number.number},
         "max_number": {"instance_name": max_number.instance_name, "number": max_number.number}
-    }), 200
+    }), 200)
+    response.headers['Access-Control-Allow-Origin'] = 'https://cis3111-2023-class.ew.r.appspot.com'
+    return response
 
 @app.route("/statistics", methods=["GET"])
 def get_statistics():
@@ -122,15 +127,19 @@ def get_statistics():
         } for row in query
     ]
 
-    return jsonify(statistics), 200, {'Access-Control-Allow-Origin': '*'}
+    response = make_response(jsonify(statistics), 200)
+    response.headers['Access-Control-Allow-Origin'] = 'https://cis3111-2023-class.ew.r.appspot.com'
+    return response
 
 @app.route("/clear", methods=["POST"])
 def clear_data():
     session = Session()
     session.query(NumberEntry).delete()
     session.commit()
-    return jsonify({"message": "All data cleared"}), 200
 
+    response = make_response(jsonify({"message": "All data cleared"}), 200)
+    response.headers['Access-Control-Allow-Origin'] = 'https://cis3111-2023-class.ew.r.appspot.com'
+    return response
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)), debug=True)
