@@ -33,14 +33,6 @@ class NumberEntry(Base):
     number = Column(Integer)
 
 
-
-class InstanceCounter(Base):
-    __tablename__ = "instance_counters"
-
-    id = Column(Integer, primary_key=True)
-    instance_name = Column(String(255))
-    count = Column(Integer)
-
 # Create the table if it doesn't exist
 Base.metadata.create_all(engine)
 
@@ -63,8 +55,6 @@ def generate():
         session.add(new_entry)
         session.commit()
 
-        session.add(instance_counter)
-        session.commit()
 
         numbers_generated.append({"instance_name": f"Instance {instance_id}", "number": random_number})
 
