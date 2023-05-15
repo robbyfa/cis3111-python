@@ -46,7 +46,7 @@ Base.metadata.create_all(engine)
 def generate():
   
     numbers_generated = []
-    for i in range(10000):
+    for i in range(1000):
         instance_id = os.environ.get("GAE_INSTANCE", "unknown-instance")
         random_number = random.randint(0, 100000)
         new_entry = NumberEntry(instance_name=f"Instance {instance_id}", number=random_number)
