@@ -49,8 +49,7 @@ def generate():
     for i in range(1000):
         instance_id = os.environ.get("GAE_INSTANCE", "unknown-instance")
         random_number = random.randint(0, 100000)
-        new_entry = NumberEntry(instance_name=f"Instance {instance_id}", number=random_number)
-
+        new_entry = NumberEntry(instance_name=f"Instance {instance_id[-5:]}", number=random_number)
         session = Session()
         session.add(new_entry)
         session.commit()
