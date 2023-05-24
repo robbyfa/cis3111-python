@@ -13,16 +13,16 @@ app = Flask(__name__)
 CORS(app, resources={r"*": {"origins": ["https://cis3111-2023-class.ew.r.appspot.com"]}})
 
 # Create database engine
-db_user = "rob"
-db_pass = "uWzKUp8YtnLuRqJP/dbeZLdV"
-db_name = "numbersdb"
+db_user = os.environ.get("DB_USER")
+db_pass = os.environ.get("DB_PASSWORD")
+db_name = os.environ.get("DB_NAME")
+cloud_sql_instance_name = os.environ.get("CLOUD_SQL_CONNECTION_NAME")
 db_socket_dir = "/cloudsql"
-cloud_sql_instance_name = "cis3111-2023-class:europe-west1:db-instance"
 
 db_url = f"mysql+pymysql://{db_user}:{db_pass}@/{db_name}?unix_socket={db_socket_dir}/{cloud_sql_instance_name}"
 engine = create_engine(db_url)
 
-# Define your database model
+# Define database model
 Base = declarative_base()
 
 class NumberEntry(Base):
@@ -36,7 +36,7 @@ class NumberEntry(Base):
 # Create the table if it doesn't exist
 Base.metadata.create_all(engine)
 
-# Create a session factory
+# Create session factory
 Session = sessionmaker(bind=engine)
 
 
