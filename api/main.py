@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request, make_response
-from google.cloud.sql.connector import Connector
 import pymysql
 import random
 import os
@@ -12,7 +11,7 @@ from sqlalchemy.orm import sessionmaker
 app = Flask(__name__)
 CORS(app, resources={r"*": {"origins": ["https://cis3111-2023-class.ew.r.appspot.com"]}})
 
-# Create database engine
+# Environment variables
 db_user = os.environ.get("DB_USER")
 db_pass = os.environ.get("DB_PASSWORD")
 db_name = os.environ.get("DB_NAME")
